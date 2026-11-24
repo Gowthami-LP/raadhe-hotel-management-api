@@ -1,6 +1,11 @@
 # Python base image
 FROM python:3.12-slim
 
+# Install security updates for the base image
+RUN apt-get update \
+    && apt-get upgrade -y --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
 # Set working directory inside container
 WORKDIR /app
 
