@@ -1,0 +1,31 @@
+services:
+
+  mongodb:
+    image: mongo:8.0
+    restart: unless-stopped
+
+    ports:
+      - "27018:27017"
+
+    volumes:
+      - raadhe_hotel_data:/data/db
+
+  api:
+    build: .
+    restart: unless-stopped
+
+    ports:
+      - "8000:8000"
+
+    env_file:
+      - .env
+
+    environment:
+      MONGODB_URL: mongodb://mongodb:27017/
+      DATABASE_NAME: raadhe_hotel_db
+
+    depends_on:
+      - mongodb
+
+volumes:
+  raadhe_hotel_data:

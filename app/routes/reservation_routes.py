@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from bson import ObjectId
 from fastapi import APIRouter, HTTPException, status
@@ -9,7 +9,6 @@ from app.schemas.reservation_schema import (
     ReservationCreate,
     ReservationStatusUpdate,
 )
-
 
 router = APIRouter(prefix="/reservations", tags=["Table Reservations"])
 reservations_collection = database["reservations"]
@@ -51,7 +50,7 @@ def create_reservation(reservation: ReservationCreate):
     reservation_data["reservation_date"] = reservation_date
     reservation_data["reservation_time"] = reservation_time
     reservation_data["status"] = "confirmed"
-    reservation_data["created_at"] = datetime.now(timezone.utc)
+    reservation_data["created_at"] = datetime.now(UTC)
 
     result = reservations_collection.insert_one(reservation_data)
     reservation_data["_id"] = result.inserted_id

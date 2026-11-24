@@ -1,9 +1,11 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 
+from app.auth.security import require_user
 from app.database.connection import check_database_connection, client
 from app.routes import (
+    auth_routes,
     catering_routes,
     menu_routes,
     order_routes,
@@ -39,6 +41,7 @@ app.include_router(order_routes.router)
 app.include_router(catering_routes.router)
 app.include_router(reservation_routes.router)
 app.include_router(payment_routes.router)
+app.include_router(auth_routes.router)
 
 
 @app.get("/")
@@ -56,4 +59,12 @@ def health_check():
     return {
         "status": "healthy",
         "database": "connected",
+    }
+
+
+@app.get("/admin/profile")
+def admin_profile(username: str = Depends(require_user)):
+    return {
+        "message": "Authenticated successfully",
+        "username": username,
     }

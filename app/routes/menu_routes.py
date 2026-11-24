@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from bson import ObjectId
 from fastapi import APIRouter, HTTPException, status
@@ -6,7 +6,6 @@ from pymongo import ReturnDocument
 
 from app.database.connection import database
 from app.schemas.menu_schema import MenuItemCreate, MenuItemUpdate
-
 
 router = APIRouter(prefix="/menu", tags=["Menu Management"])
 menu_collection = database["menu_items"]
@@ -29,7 +28,7 @@ def parse_object_id(item_id: str) -> ObjectId:
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def create_menu_item(menu: MenuItemCreate):
     menu_data = menu.model_dump()
-    menu_data["created_at"] = datetime.now(timezone.utc)
+    menu_data["created_at"] = datetime.now(UTC)
     result = menu_collection.insert_one(menu_data)
     menu_data["_id"] = result.inserted_id
     return convert_menu_item(menu_data)

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from bson import ObjectId
 from fastapi import APIRouter, HTTPException, status
@@ -6,7 +6,6 @@ from pymongo import ReturnDocument
 
 from app.database.connection import database
 from app.schemas.order_schema import OrderCreate, OrderStatusUpdate
-
 
 router = APIRouter(prefix="/orders", tags=["Food Orders"])
 orders_collection = database["food_orders"]
@@ -71,7 +70,7 @@ def create_order(order: OrderCreate):
             "items": order_items,
             "total_amount": total_amount,
             "status": "placed",
-            "created_at": datetime.now(timezone.utc),
+            "created_at": datetime.now(UTC),
         }
     )
     result = orders_collection.insert_one(order_data)

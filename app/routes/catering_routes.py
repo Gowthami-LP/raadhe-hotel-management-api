@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from bson import ObjectId
 from fastapi import APIRouter, HTTPException, status
@@ -9,7 +9,6 @@ from app.schemas.catering_schema import (
     CateringBookingCreate,
     CateringStatusUpdate,
 )
-
 
 router = APIRouter(prefix="/catering", tags=["Catering Management"])
 catering_collection = database["catering_bookings"]
@@ -36,7 +35,7 @@ def create_catering_booking(booking: CateringBookingCreate):
     booking_data["event_date"] = booking.event_date.isoformat()
     booking_data["estimated_total"] = round(total_amount, 2)
     booking_data["status"] = "requested"
-    booking_data["created_at"] = datetime.now(timezone.utc)
+    booking_data["created_at"] = datetime.now(UTC)
 
     result = catering_collection.insert_one(booking_data)
     booking_data["_id"] = result.inserted_id
@@ -50,9 +49,7 @@ def get_catering_bookings():
 
 @router.get("/{booking_id}")
 def get_catering_booking(booking_id: str):
-    booking = catering_collection.find_one(
-        {"_id": parse_object_id(booking_id)}
-    )
+    booking = catering_collection.find_one({"_id": parse_object_id(booking_id)})
     if booking is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
